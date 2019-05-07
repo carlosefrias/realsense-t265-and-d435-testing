@@ -19,7 +19,8 @@ public class RsPoseStreamTransformer : MonoBehaviour
         public int tracker_confidence;
         public int mapper_confidence;
     }
-    RsPose pose = new RsPose();
+
+    readonly RsPose pose = new RsPose();
 
 
     public RsFrameProvider Source;
@@ -43,11 +44,9 @@ public class RsPoseStreamTransformer : MonoBehaviour
     {
         Source.OnNewSample -= OnNewSample;
 
-        if (q != null)
-        {
-            q.Dispose();
-            q = null;
-        }
+        if (q == null) return;
+        q.Dispose();
+        q = null;
     }
 
 
@@ -70,27 +69,27 @@ public class RsPoseStreamTransformer : MonoBehaviour
 
     void Update()
     {
-        if (q != null)
+        if (q == null) return;
+        PoseFrame frame;
+        if (!q.PollForFrame<PoseFrame>(out frame)) return;
+        using (frame)
         {
-            PoseFrame frame;
-            if (q.PollForFrame<PoseFrame>(out frame))
-                using (frame)
-                {
-                    frame.CopyTo(pose);
+            frame.CopyTo(pose);
 
-                    // Convert T265 coordinate system to Unity's
-                    // see https://realsense.intel.com/how-to-getting-imu-data-from-d435i-and-t265/
+            // Convert T265 coordinate system to Unity's
+            // see https://realsense.intel.com/how-to-getting-imu-data-from-d435i-and-t265/
 
-                    var t = pose.translation;
-                    t.Set(t.x, t.y, -t.z);
+            var t = pose.translation;
+            t.Set(t.x, t.y, -t.z);
 
-                    var e = pose.rotation.eulerAngles;
-                    var r = Quaternion.Euler(-e.x, -e.y, e.z);
+            var e = pose.rotation.eulerAngles;
+            var r = Quaternion.Euler(-e.x, -e.y, e.z);
 
-                    transform.localRotation = r;
-                    transform.localPosition = t;
-                }
+            transform.localRotation = r;
+            transform.localPosition = t;
 
+            //print($"Acceleration: {pose.acceleration}\nVelocity: {pose.velocity}\nAngular acceleration: {pose.angular_acceleration}" +
+            //      $"\nAngular velocity: {pose.angular_velocity}\nMapper confidence: {pose.mapper_confidence}\nTracker confidence: {pose.tracker_confidence}");
         }
     }
 }
