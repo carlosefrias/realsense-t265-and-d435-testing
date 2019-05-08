@@ -149,7 +149,6 @@ if __name__ == "__main__":
             # If the 's' key is pressed, we save the images
             # =============================================
             if c == ord('s'):
-                print("s pressed")
                 img_counter = image_file_counter(rgb_img_path)
 
                 '''create a stream folders'''
