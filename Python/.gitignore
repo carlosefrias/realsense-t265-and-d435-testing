@@ -106,5 +106,8 @@ venv.bak/
 # DXF files
 *.dxf
 
+# vscode settings folder
+/.vscode/
+
 #Images captures by the cameras
 /data/

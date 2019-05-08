@@ -1,6 +1,6 @@
 import pyrealsense2 as rs
 import numpy as np 
-import cv2.cv2 as cv2
+import cv2
 import os
 
 pipe = rs.pipeline()
@@ -36,10 +36,11 @@ try:
         cv2.imshow('left', left_data)
         cv2.imshow('right', right_data)
 
-        cv2.imwrite(f'{left_path}/{str(i)}%.{file_format}', left_data)
+        cv2.imwrite(f'{left_path}/{str(i)}.{file_format}', left_data)
         cv2.imwrite(f'{right_path}/{str(i)}.{file_format}', right_data)
 
         cv2.waitKey(500)
-
+except:
+    print("Unable to capture frames.")
 finally:
     pipe.stop()
